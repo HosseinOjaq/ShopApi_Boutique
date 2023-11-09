@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Api.Web</name>
+    </assembly>
+    <members>
+        <member name="M:MyApi.Controllers.v1.UsersController.Token(Entities.DTOs.Token.TokenRequest,System.Threading.CancellationToken)">
+            <summary>
+            This method generate JWT Token
+            </summary>
+            <param name="tokenRequest">The information of token request</param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MyApi.Controllers.v2.UsersController.Token(Entities.DTOs.Token.TokenRequest,System.Threading.CancellationToken)">
+            <summary>
+            
+            </summary>
+            <param name="tokenRequest"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MyApi.Controllers.v2.UsersController.SignUp(Entities.DTOs.UserDtos.UserDto,System.Threading.CancellationToken)">
+            <summary>
+            
+            </summary>
+            <param name="userDto"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
