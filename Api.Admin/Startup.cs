@@ -18,6 +18,9 @@ using WebFramework.Swagger;
 using Entities.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Api.Admin.Filters;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Admin
 {
@@ -35,10 +38,10 @@ namespace Api.Admin
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            PopulateControllersAndActions();
-            PopulatePermissionsAndGroupsIntoDatabase();
             services.Configure<SiteSettings>(Configuration.GetSection(nameof(SiteSettings)));
-            services.AddControllers().AddJsonOptions(x =>
+            services.AddControllers
+                (x => x.Filters.Add<PermissionControlActionFilter>())
+                .AddJsonOptions(x =>
              x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
 
             services.InitializeAutoMapper();
@@ -97,7 +100,10 @@ namespace Api.Admin
                             type.CustomAttributes.Any(c => c.AttributeType.Name == "AuthorizeAttribute");
 
                         bool classHasIgnorePermissionCheck =
-                            type.CustomAttributes.Any(c => c.AttributeType.Name == "IgnorePermissionCheckAttribute");
+                            type.CustomAttributes
+                            .Any(c => c.AttributeType.Name == "IgnorePermissionCheckAttribute" ||
+                            c.AttributeType.GetType() == typeof(AllowAnonymousAttribute));
+
                         if (classHasIgnorePermissionCheck) // if the class has this attribute, that means it's marked to ignore permission check
                         {
                             continue;
@@ -296,6 +302,16 @@ namespace Api.Admin
             }
             db.SaveChanges();
 
+            var permissionIds =
+                        db.ChangeTracker
+                       .Entries<Permission>()
+                       .SelectMany(x => x.Properties)
+                       .Where(x => x.Metadata.Name == "Id")
+                       .Select(x => x.CurrentValue)
+                       .ToList();
+
+            db.RolePermissions.AddRange(permissionIds.Select(x => new RolePermission { RoleID = 1, PermissionID = (int)x }));
+            db.SaveChanges();
         }
         // ConfigureContainer is where you can register things directly with Autofac. 
         // This runs after ConfigureServices so the things ere will override registrations made in ConfigureServices.
@@ -329,6 +345,12 @@ namespace Api.Admin
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseStaticFiles();
+
+            if (env.IsDevelopment())
+            {
+                PopulateControllersAndActions();
+                PopulatePermissionsAndGroupsIntoDatabase();
+            }
 
             //Use this config just in Develoment (not in Production)
             //app.UseCors(config => config.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());

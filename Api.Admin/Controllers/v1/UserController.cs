@@ -11,9 +11,7 @@ using System.Threading;
 using WebFramework.Api;
 using WebFramework.Filters;
 using Microsoft.EntityFrameworkCore;
-using Entities.DTOs.UserDtos;
 using MyApi.Models.UserProfile;
-using Common.Utilities;
 
 namespace Api.Admin.Controllers.v1
 {

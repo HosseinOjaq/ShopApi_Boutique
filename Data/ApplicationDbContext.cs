@@ -1,6 +1,7 @@
 ﻿using Common.Utilities;
 using Entities;
 using Entities.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -12,29 +13,34 @@ namespace Data
 {
     public class ApplicationDbContext : IdentityDbContext<User, Role, int>
     {
-        public ApplicationDbContext()
-        {
+        public ApplicationDbContext() { }
 
-        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=.\\V19;Initial Catalog=ApiDbSample; User Id=sa; Password=1;");
+                optionsBuilder.UseSqlServer("Data Source=.\\V19;Initial Catalog=ShopApi_AliDB; User Id=sa; Password=1;");
             }
             base.OnConfiguring(optionsBuilder);
         }
+
         public ApplicationDbContext(DbContextOptions options)
             : base(options) { }
+
         public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<PermissionGroup> PermissionGroups { get; set; }
         public DbSet<Permission> Permissions { get; set; }
+        public DbSet<Order> Orders { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             var entitiesAssembly = typeof(IEntity).Assembly;
-
+            modelBuilder.HasSequence<int>("OrederCodeSequence")
+                .StartsAt(1000)
+                .IncrementsBy(5);
             modelBuilder.RegisterAllEntities<IEntity>(entitiesAssembly);
             modelBuilder.RegisterEntityTypeConfiguration(entitiesAssembly);
             modelBuilder.AddRestrictDeleteBehaviorConvention();
@@ -42,6 +48,7 @@ namespace Data
             modelBuilder.AddPluralizingTableNameConvention();
         }
 
+        #region Over rided methods
         public override int SaveChanges()
         {
             _cleanString();
@@ -53,7 +60,6 @@ namespace Data
             _cleanString();
             return base.SaveChanges(acceptAllChangesOnSuccess);
         }
-
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
             _cleanString();
@@ -93,5 +99,6 @@ namespace Data
                 }
             }
         }
+        #endregion
     }
 }

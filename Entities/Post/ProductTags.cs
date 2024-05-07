@@ -17,7 +17,7 @@ namespace Entities
         public void Configure(EntityTypeBuilder<ProductTags> builder)
         {
             builder.HasOne(p => p.Tags).WithMany(c => c.productTags).HasForeignKey(p => p.TagId);
-            builder.HasOne(p => p.Product).WithMany(c => c.productTags).HasForeignKey(p => p.ProductId);
+            builder.HasOne(p => p.Product).WithMany(c => c.ProductTags).HasForeignKey(p => p.ProductId);
         }
     }
 }

@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Data.Repositories;
 using Entities;
 using Entities.DTOs.Token;
 using Entities.DTOs.UserDtos;
-using Entities.DTOs.UsersDtos.Admin;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

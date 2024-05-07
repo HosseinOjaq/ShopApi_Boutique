@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.AspNetCore.Identity;
 
 namespace Entities
 {
@@ -24,7 +22,7 @@ namespace Entities
 
 
         public ICollection<ShoppingItem> ShippingItems { get; set; }
-        public ICollection<Post> Posts { get; set; }
+        public ICollection<Product> Products { get; set; }
         public ICollection<Order> Orders { get; set; }
         public ICollection<ProductRating> ProductRatings { get; set; }
         public ICollection<UserAddress> UserAddresses { get; set; }

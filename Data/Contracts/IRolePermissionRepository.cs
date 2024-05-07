@@ -1,16 +1,15 @@
 ﻿using Data.Repositories;
-using Entities.DTOs.Roles;
 using Entities.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Entities.DTOs.Roles;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Data.Contracts
 {
-    public interface IRolePermissionRepository:IRepository<RolePermission>
+    public interface IRolePermissionRepository : IRepository<RolePermission>
     {
         Task<List<TreeViewItemModel>> GetPermissionsList(int? roleid = 0);
+        Task Create(int rolId, int[] SelectedPermissions);
+        Task<bool> HasPermission(int userId, string actionFullName);
     }
 }

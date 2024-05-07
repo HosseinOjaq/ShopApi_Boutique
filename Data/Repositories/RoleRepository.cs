@@ -13,7 +13,7 @@ namespace Data.Repositories
         }
         public IEnumerable<Role> ReturnRoleService(int Id)
         {
-            List<Role> exists = Table.Where(a => a.Id == Id).ToList();
+            var exists = Table.Where(a => a.Id == Id).ToList();
             return exists;
         }
     }

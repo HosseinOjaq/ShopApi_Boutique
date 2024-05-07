@@ -32,7 +32,7 @@ namespace Entities
         public ICollection<ProductFile> ProductFiles { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
         public ICollection<ProductRating> ProductRatings { get; set; }
-        public ICollection<ProductTags> productTags { get; set; }
+        public ICollection<ProductTags> ProductTags { get; set; }
     }
     public class ProductConfiguration : IEntityTypeConfiguration<Product>
     {

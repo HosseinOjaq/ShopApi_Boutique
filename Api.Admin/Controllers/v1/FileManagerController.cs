@@ -1,4 +1,5 @@
 ﻿using Data.Contracts;
+using Entities.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,8 @@ namespace Api.Admin.Controllers.v1
             this.env = env;
         }
 
-
+        [Title("مدیریت گروه های کاربران")]
+        [Icon("fas fa-users")]
         [HttpPost]
         public async Task<IActionResult> DeleteProductFile([FromForm] string id)
         {

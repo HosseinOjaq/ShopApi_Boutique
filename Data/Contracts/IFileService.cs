@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using IFormFile = Microsoft.AspNetCore.Http.IFormFile;
 
 namespace Data.Contracts
 {

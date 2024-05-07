@@ -4,14 +4,16 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231110162837_AddOrderCode")]
+    partial class AddOrderCode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -209,10 +211,7 @@ namespace Data.Migrations
                     b.Property<long>("RefrencID")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StatusCode")
+                    b.Property<int>("status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -220,6 +219,37 @@ namespace Data.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("Entities.Post", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("Entities.Product", b =>
@@ -254,17 +284,12 @@ namespace Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("Title")
                         .IsUnique();
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Products");
                 });
@@ -729,6 +754,25 @@ namespace Data.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("Entities.Post", b =>
+                {
+                    b.HasOne("Entities.User", "Author")
+                        .WithMany("Posts")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Entities.Category", "Category")
+                        .WithMany("Posts")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("Entities.Product", b =>
                 {
                     b.HasOne("Entities.Category", "Category")
@@ -736,10 +780,6 @@ namespace Data.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("Entities.User", null)
-                        .WithMany("Products")
-                        .HasForeignKey("UserId");
 
                     b.Navigation("Category");
                 });
@@ -777,7 +817,7 @@ namespace Data.Migrations
             modelBuilder.Entity("Entities.ProductTags", b =>
                 {
                     b.HasOne("Entities.Product", "Product")
-                        .WithMany("ProductTags")
+                        .WithMany("productTags")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -878,6 +918,8 @@ namespace Data.Migrations
                 {
                     b.Navigation("ChildCategories");
 
+                    b.Navigation("Posts");
+
                     b.Navigation("Products");
                 });
 
@@ -901,7 +943,7 @@ namespace Data.Migrations
 
                     b.Navigation("ProductRatings");
 
-                    b.Navigation("ProductTags");
+                    b.Navigation("productTags");
 
                     b.Navigation("ShoppingItems");
                 });
@@ -915,9 +957,9 @@ namespace Data.Migrations
                 {
                     b.Navigation("Orders");
 
-                    b.Navigation("ProductRatings");
+                    b.Navigation("Posts");
 
-                    b.Navigation("Products");
+                    b.Navigation("ProductRatings");
 
                     b.Navigation("ShippingItems");
 

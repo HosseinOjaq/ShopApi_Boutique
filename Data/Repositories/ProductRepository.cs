@@ -181,16 +181,13 @@ namespace Data.Repositories
         public async Task<bool> DeleteProductFileBayIdAsync(int fileId, CancellationToken cancellationToken)
         {
             var ProductFile = await productFileRepository.Table.Where(x => x.Id == fileId).SingleOrDefaultAsync(cancellationToken);
-            if (ProductFile != null)
+            if (ProductFile is null)
                 return false;
 
             var filepath = GetProductFileFullPath(ProductFile.FileName, env.ContentRootPath);
             var result = await fileService.DeleteFile(filepath);
 
-            if (result == false)
-                return false;
-
-            return true;
+            return result;
         }
     }
 }

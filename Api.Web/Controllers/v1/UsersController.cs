@@ -1,21 +1,20 @@
-﻿using Common.Exceptions;
-using Data.Repositories;
+﻿using System;
 using Entities;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Services;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using WebFramework.Api;
-using Microsoft.AspNetCore.Identity;
-using Entities.DTOs.UsersDtos.Admin;
+using System.Threading;
+using Common.Exceptions;
+using Data.Repositories;
 using Entities.DTOs.Token;
-using Microsoft.AspNetCore.Cors;
 using WebFramework.Filters;
 using Entities.DTOs.UserDtos;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MyApi.Controllers.v1
 {
@@ -43,11 +42,11 @@ namespace MyApi.Controllers.v1
             this.roleManager = roleManager;
             this.signInManager = signInManager;
         }
-       
-        [HttpPost(nameof(SignUp))]        
+
+        [HttpPost(nameof(SignUp))]
         public virtual async Task<ApiResult<User>> SignUp(UserDto userDto, CancellationToken cancellationToken)
         {
-            var isExists = await userManager.Users.AnyAsync(x => x.UserName == userDto.UserName);
+            var isExists = await userManager.Users.AnyAsync(x => x.UserName == userDto.UserName, cancellationToken: cancellationToken);
             if (isExists)
                 return BadRequest("نام کاربری تکراری است");
             var user = new User
@@ -65,7 +64,7 @@ namespace MyApi.Controllers.v1
         /// <param name="tokenRequest">The information of token request</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [HttpPost(nameof(Token))]        
+        [HttpPost(nameof(Token))]
         [EnableCors("AllowCors")]
         public virtual async Task<ActionResult> Token([FromForm] TokenRequest tokenRequest, CancellationToken cancellationToken)
         {
