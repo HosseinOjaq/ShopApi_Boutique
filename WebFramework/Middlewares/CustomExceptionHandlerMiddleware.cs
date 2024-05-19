@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
+﻿using Common;
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Common;
 using System.Net;
+using Newtonsoft.Json;
+using WebFramework.Api;
 using Common.Exceptions;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
-using WebFramework.Api;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace WebFramework.Middlewares
 {

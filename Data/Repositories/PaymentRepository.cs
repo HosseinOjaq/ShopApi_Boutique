@@ -22,6 +22,42 @@ namespace Data.Repositories
             _userRepository = userRepository;
         }
 
+        public async Task<string> FinalyOrder(int orderId, CancellationToken cancellationToken)
+        {
+            var existsPayment = await Table
+                    .SingleOrDefaultAsync(x => x.OrderId == orderId, cancellationToken);
+            if (existsPayment is not null && existsPayment.Status == PaymentStatus.Finally)
+                return "این پیش فاکتور نهایی شده است.";
+
+            var order = await _orderRepository.Table.SingleOrDefaultAsync(x => x.Id == orderId, cancellationToken);
+            var User = _userRepository.Table.Where(x => x.Id == order.UserId).SingleOrDefault();
+            var zarinPal = new ZarinpalSandbox.Payment((int)order.OrderSum);
+            var callbackUrl = "https://localhost:44339/api/Payment/FinalizeBook";
+            var desciription = $"خرید بابت پیش فاکتور {order.Code}";
+            var Email = User.Email;
+            var mobile = User.PhoneNumber;
+            var req = await zarinPal.PaymentRequest(desciription, callbackUrl, Email, mobile);
+            if (existsPayment is not null && existsPayment.Status != PaymentStatus.Finally)
+            {
+                existsPayment.Authority = req.Authority;
+                existsPayment.Price = order.OrderSum;
+                await UpdateAsync(existsPayment, cancellationToken);
+                return req.Link;
+            }
+            var payment = new Payment
+            {
+                Authority = req.Authority,
+                Date = DateTime.Now,
+                OrderId = orderId,
+                Price = order.OrderSum,
+                StatusCode = 0,
+                Status = PaymentStatus.Pending,
+                RefrencID = 0,
+            };
+            await AddAsync(payment, cancellationToken);
+            return req.Link;
+        }
+
         public async Task<PaymentVerificationResponseDto> FinalyBuy(string authority, int userId, CancellationToken cancellationToken)
         {
             var result = new PaymentVerificationResponseDto();
@@ -30,7 +66,6 @@ namespace Data.Repositories
                                 .SingleOrDefaultAsync(x => x.Authority == authority &&
                                                       x.Status == PaymentStatus.Pending &&
                                                       x.Order.UserId == userId, cancellationToken);
-
             if (payment is null)
                 result.Message = "درخواست نامعتبر می باشد.";
 
@@ -74,40 +109,5 @@ namespace Data.Repositories
             return result;
         }
 
-        public async Task<string> FinalyOrder(int orderId, CancellationToken cancellationToken)
-        {
-            var existsPayment = await Table
-                    .SingleOrDefaultAsync(x => x.OrderId == orderId, cancellationToken);
-            if (existsPayment is not null && existsPayment.Status == PaymentStatus.Finally)
-                return "این پیش فاکتور نهایی شده است.";
-
-            var order = await _orderRepository.Table.SingleOrDefaultAsync(x => x.Id == orderId, cancellationToken);
-            var User = _userRepository.Table.Where(x => x.Id == order.UserId).SingleOrDefault();
-            var zarinPal = new ZarinpalSandbox.Payment((int)order.OrderSum);
-            var callbackUrl = "https://localhost:44339/api/Payment/FinalizeBook";
-            var desciription = $"خرید بابت پیش فاکتور {order.Code}";
-            var Email = User.Email;
-            var mobile = User.PhoneNumber;
-            var req = await zarinPal.PaymentRequest(desciription, callbackUrl, Email, mobile);
-            if (existsPayment is not null && existsPayment.Status != PaymentStatus.Finally)
-            {
-                existsPayment.Authority = req.Authority;
-                existsPayment.Price = order.OrderSum;
-                await UpdateAsync(existsPayment, cancellationToken);
-                return req.Link;
-            }
-            var payment = new Payment
-            {
-                Authority = req.Authority,
-                Date = DateTime.Now,
-                OrderId = orderId,
-                Price = order.OrderSum,
-                StatusCode = 0,
-                Status = PaymentStatus.Pending,
-                RefrencID = 0,
-            };
-            await AddAsync(payment, cancellationToken);
-            return req.Link;
-        }
     }
 }
