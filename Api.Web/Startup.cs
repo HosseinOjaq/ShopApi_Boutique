@@ -1,17 +1,16 @@
 ﻿using Autofac;
 using Common;
-using Microsoft.AspNetCore.Builder;
+using WebFramework.Cors;
+using System.Reflection;
+using WebFramework.Swagger;
+using WebFramework.Middlewares;
+using WebFramework.Configuration;
+using WebFramework.CustomMapping;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net.Http;
-using System.Reflection;
-using System.Text.Json.Serialization;
-using WebFramework.Configuration;
-using WebFramework.Cors;
-using WebFramework.CustomMapping;
-using WebFramework.Middlewares;
-using WebFramework.Swagger;
 
 namespace MyApi
 {

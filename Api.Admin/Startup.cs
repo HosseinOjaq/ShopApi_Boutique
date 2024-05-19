@@ -101,7 +101,7 @@ namespace Api.Admin
             app.UseStaticFiles();
 
             if (env.IsDevelopment())
-            {
+            { 
                 app.UseCustomPopulateControllersAndAction();
             }
 
