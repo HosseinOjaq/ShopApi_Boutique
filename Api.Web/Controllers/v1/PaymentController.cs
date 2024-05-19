@@ -1,21 +1,13 @@
-﻿using Sentry;
-using Common;
-using System;
-using Entities;
-using System.Linq;
-using Entities.Enums;
+﻿using Common;
 using Data.Contracts;
 using WebFramework.Api;
 using System.Threading;
-using Data.Repositories;
 using WebFramework.Filters;
-using ZarinpalSandbox.Models;
+using Entities.DTOs.Payment;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using Entities.DTOs.Payment;
 
 namespace Api.Web.Controllers.v1
 {
