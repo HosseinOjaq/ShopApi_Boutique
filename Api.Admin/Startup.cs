@@ -21,6 +21,7 @@ using Microsoft.EntityFrameworkCore;
 using Api.Admin.Filters;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authorization;
+using Api.Admin.Modules;
 
 namespace Api.Admin
 {
@@ -66,7 +67,7 @@ namespace Api.Admin
             // Don't create a ContainerBuilder for Autofac here, and don't call builder.Populate()
             // That happens in the AutofacServiceProviderFactory for you.            
         }
-    
+
         // ConfigureContainer is where you can register things directly with Autofac. 
         // This runs after ConfigureServices so the things ere will override registrations made in ConfigureServices.
         // Don't build the container; that gets done for you by the factory.
@@ -101,8 +102,9 @@ namespace Api.Admin
             app.UseStaticFiles();
 
             if (env.IsDevelopment())
-            { 
-                app.UseCustomPopulateControllersAndAction();
+            {
+                PermissionModule.PopulateControllersAndActions();
+                PermissionModule.PopulatePermissionsAndGroupsIntoDatabase();
             }
 
             //Use this config just in Develoment (not in Production)

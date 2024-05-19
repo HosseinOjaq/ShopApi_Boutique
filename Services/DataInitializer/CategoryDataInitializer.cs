@@ -1,6 +1,6 @@
-﻿using Data.Repositories;
-using Entities;
+﻿using Entities;
 using System.Linq;
+using Data.Repositories;
 
 namespace Services.DataInitializer
 {

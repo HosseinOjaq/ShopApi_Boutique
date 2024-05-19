@@ -56,7 +56,7 @@ namespace Data.Repositories
             }
         }
 
-        public async Task<List<TreeViewItemModel>> GetPermissionsList(int? roleid = 0,CancellationToken cancellationToken=default)
+        public async Task<List<TreeViewItemModel>> GetPermissionsList(int? roleid = 0, CancellationToken cancellationToken = default)
         {
             var treeItems = new List<TreeViewItemModel>();
             List<int> rolePermissions = new List<int>();
@@ -95,14 +95,14 @@ namespace Data.Repositories
 
         public async Task<bool> HasPermission(int userId, string actionFullName)
         {
-            return await(from UserRole in DbContext.UserRoles
-                         join RolePermissions in DbContext.RolePermissions                         
-                         on UserRole.RoleId equals RolePermissions.RoleID
-                         join Permissions in DbContext.Permissions
-                         on RolePermissions.PermissionID equals Permissions.Id
-                         where UserRole.UserId == userId
-                         && Permissions.ActionFullName == actionFullName
-                         select RolePermissions.Id)
+            return await (from UserRole in DbContext.UserRoles
+                          join RolePermissions in DbContext.RolePermissions
+                          on UserRole.RoleId equals RolePermissions.RoleID
+                          join Permissions in DbContext.Permissions
+                          on RolePermissions.PermissionID equals Permissions.Id
+                          where UserRole.UserId == userId
+                          && Permissions.ActionFullName == actionFullName
+                          select RolePermissions.Id)
                 .AnyAsync();
         }
     }

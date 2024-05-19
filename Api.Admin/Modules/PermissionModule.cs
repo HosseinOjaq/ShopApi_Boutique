@@ -133,6 +133,21 @@ namespace Api.Admin.Modules
                                     });
                                 }
                             }
+                            else if (methodInfo.ReturnType.Name  == "ApiResult")
+                            {
+                                if (!controllerData.ActionsList.Any(cd => cd.ActionName == (actionName ?? methodInfo.Name)))
+                                {
+                                    controllerData.ActionsList.Add(new ActionData()
+                                    {
+                                        ActionName = actionName ?? methodInfo.Name,
+                                        ActionNameLocalized = actionNameLocalized,
+                                        ActionIcon = actionIcon,
+                                        AllowAnonymous = isAllowAnonymous,
+                                        RequiresHttpPost = isHttpPost,
+                                        RequiresAuthorization = actionRequiresAuthorization
+                                    });
+                                }
+                            }
                         }
                         data.Add(controllerData);
                     }
@@ -237,7 +252,8 @@ namespace Api.Admin.Modules
                         {
                             permission.RequiresAuthorization = true;
                         }
-                        newGroup.Permissions.Add(permission);
+                          newGroup.Permissions.Add(permission);
+                       /* db.RolePermissions.Add(new RolePermission { PermissionID = permission.Id, RoleID = 1 });*/
                     }
                     db.PermissionGroups.Add(newGroup);
                 }
