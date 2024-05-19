@@ -1,11 +1,10 @@
-﻿using Data.Contracts;
-using Entities.Attributes;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using System.Threading.Tasks;
+﻿using System.IO;
+using Data.Contracts;
 using WebFramework.Filters;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Admin.Controllers.v1
 {
@@ -25,9 +24,7 @@ namespace Api.Admin.Controllers.v1
             this.env = env;
         }
 
-        [Title("مدیریت گروه های کاربران")]
-        [Icon("fas fa-users")]
-        [HttpPost]
+        [HttpPost(nameof(DeleteProductFile))]
         public async Task<IActionResult> DeleteProductFile([FromForm] string id)
         {
             var path = Path.Combine(env.ContentRootPath, "wwwroot", "Uploads", "Products", id);

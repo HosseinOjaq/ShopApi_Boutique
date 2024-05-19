@@ -1,9 +1,9 @@
 ﻿using Common;
-using Data.Contracts;
 using Entities;
-using Microsoft.EntityFrameworkCore;
+using Data.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories
 {

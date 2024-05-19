@@ -5,6 +5,7 @@ using Entities.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Data.Repositories
@@ -55,7 +56,7 @@ namespace Data.Repositories
             }
         }
 
-        public async Task<List<TreeViewItemModel>> GetPermissionsList(int? roleid = 0)
+        public async Task<List<TreeViewItemModel>> GetPermissionsList(int? roleid = 0,CancellationToken cancellationToken=default)
         {
             var treeItems = new List<TreeViewItemModel>();
             List<int> rolePermissions = new List<int>();

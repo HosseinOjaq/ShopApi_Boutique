@@ -1,30 +1,28 @@
 ﻿using Common;
-using Data.Contracts;
-using Entities;
-using Entities.DTOs.Order;
-using Entities.DTOs.Product;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
+using Entities;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
+using System.Data;
+using Data.Contracts;
 using System.Threading;
+using Entities.DTOs.Order;
+using Entities.DTOs.Product;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories
 {
     public class OrderRepository : Repository<Order>, IOrderRepository, IScopedDependency
     {
-        private readonly IUserRepository userRepository;
         private readonly IProductRepository productRepository;
         private readonly IOrderDetailRepository orderDetailRepository;
         private readonly IHostingEnvironment env;
 
-        public OrderRepository(ApplicationDbContext dbContext, IUserRepository userRepository, IProductRepository productRepository, IOrderDetailRepository orderDetailRepository, IHostingEnvironment env) : base(dbContext)
+        public OrderRepository(ApplicationDbContext dbContext, IProductRepository productRepository, IOrderDetailRepository orderDetailRepository, IHostingEnvironment env) : base(dbContext)
         {
-            this.userRepository = userRepository;
             this.productRepository = productRepository;
             this.orderDetailRepository = orderDetailRepository;
             this.env = env;

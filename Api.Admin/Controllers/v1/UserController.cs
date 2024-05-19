@@ -1,17 +1,17 @@
 ﻿using Common;
-using Data.Repositories;
 using Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Services;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Threading;
 using WebFramework.Api;
+using Data.Repositories;
 using WebFramework.Filters;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using MyApi.Models.UserProfile;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace Api.Admin.Controllers.v1
 {
@@ -39,7 +39,7 @@ namespace Api.Admin.Controllers.v1
             this.signInManager = signInManager;
         }
 
-        [HttpGet]        
+        [HttpGet]
         public async Task<ActionResult<List<User>>> GetAll(CancellationToken cancellationToken)
         {
             #region TokenValue
@@ -78,7 +78,7 @@ namespace Api.Admin.Controllers.v1
             updateUser.NormalizedUserName = user.NormalizedUserName;
             updateUser.Gender = user.Gender;
             updateUser.PhoneNumber = user.PhoneNumber;
-            await userManager.UpdateAsync(updateUser);            
+            await userManager.UpdateAsync(updateUser);
             return Ok();
         }
 
