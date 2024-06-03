@@ -10,11 +10,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Authorization;
+using Entities;
 
 namespace Api.Admin.Controllers.v1
 {
     [ApiVersion("1")]
-    [AllowAnonymous]
+    /*[AllowAnonymous]*/
     [Route("api/Admin/[controller]")]
     [ApiResultFilter]
     [ApiController]

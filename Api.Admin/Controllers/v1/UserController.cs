@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Admin.Controllers.v1
 {
@@ -19,6 +20,7 @@ namespace Api.Admin.Controllers.v1
     [Route("api/Admin/[controller]")]
     [ApiResultFilter]
     [ApiController]
+    [AllowAnonymous]
     public class UserController : Controller
     {
         private readonly IUserRepository userRepository;

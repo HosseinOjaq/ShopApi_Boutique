@@ -6,12 +6,14 @@ using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using HtmlAgilityPack;
+using WebFramework.Api;
 
 namespace Api.Admin.Modules
 {
     public static class PermissionModule
     {
-      public static List<ControllerData> PopulateControllersAndActions()
+        public static List<ControllerData> PopulateControllersAndActions()
         {
             List<ControllerData> data = new List<ControllerData>();
 
@@ -44,9 +46,20 @@ namespace Api.Admin.Modules
                         bool controllerHasAuthorizeAttribute =
                             type.CustomAttributes.Any(c => c.AttributeType.Name == "AuthorizeAttribute");
 
+                        bool controllerHasAllowAnonymousAttribute =
+                            type.CustomAttributes.Any(c => c.AttributeType.Name == "AllowAnonymousAttribute");
+
+                        bool controllerHasTitleAttribute =
+                           type.CustomAttributes.Any(c => c.AttributeType.Name == "TitleAttribute");
+
                         bool classHasIgnorePermissionCheck =
                             type.CustomAttributes.Any(c => c.AttributeType.Name == "IgnorePermissionCheckAttribute");
-                        if (classHasIgnorePermissionCheck) // if the class has this attribute, that means it's marked to ignore permission check
+                        var conterollerName = type.Name.Replace("Controller", "");
+                        if (!controllerHasAllowAnonymousAttribute && !controllerHasTitleAttribute)
+                        {
+                            throw new ArgumentException($"دسترسی ازاد نداردباید موضوع دسترسی مناسب برای ان انتخاب شود{conterollerName} اگه این  کنترلر");
+                        }
+                        if (classHasIgnorePermissionCheck || controllerHasAllowAnonymousAttribute || !controllerHasTitleAttribute) // if the class has this attribute, that means it's marked to ignore permission check
                         {
                             continue;
                         }
@@ -61,7 +74,7 @@ namespace Api.Admin.Modules
                         var controllerData = new ControllerData()
                         {
                             ControllerNamespace = type.Namespace,
-                            ControllerName = type.Name.Replace("Controller", ""),
+                            ControllerName = conterollerName,
                             RequiresAuthorization = controllerHasAuthorizeAttribute,
                             ControllerNameLocalized = controllerNameLocalized
                         };
@@ -116,36 +129,55 @@ namespace Api.Admin.Modules
                                 actionIcon = displayIcon.ConstructorArguments[0].Value.ToString();
                             }
 
-                            // Gather only methods with ActionResult return types:
-                            if (methodInfo.ReturnType.Name == "ActionResult")
+
+                            if (methodInfo.ReturnType.IsGenericType && methodInfo.ReturnType.GetGenericArguments().Length > 0)
                             {
-                                //actions.Add(methodInfo.Name);
-                                if (!controllerData.ActionsList.Any(cd => cd.ActionName == (actionName ?? methodInfo.Name)))
+                                Type innerType = methodInfo.ReturnType.GetGenericArguments()[0];
+                                // Gather only methods with ActionResult return types:
+                                if (innerType.Name == "IActionResult" || innerType.IsGenericType && innerType.GetGenericTypeDefinition() == typeof(ApiResult<>) || innerType.Name == "ActionResult")
                                 {
-                                    controllerData.ActionsList.Add(new ActionData()
+                                    //actions.Add(methodInfo.Name);
+                                    if (actionNameLocalized is not null && controllerHasAllowAnonymousAttribute == false)
                                     {
-                                        ActionName = actionName ?? methodInfo.Name,
-                                        ActionNameLocalized = actionNameLocalized,
-                                        ActionIcon = actionIcon,
-                                        AllowAnonymous = isAllowAnonymous,
-                                        RequiresHttpPost = isHttpPost,
-                                        RequiresAuthorization = actionRequiresAuthorization
-                                    });
+                                        if (!controllerData.ActionsList.Any(cd => cd.ActionName == (actionName ?? methodInfo.Name)))
+                                        {
+                                            controllerData.ActionsList.Add(new ActionData()
+                                            {
+                                                ActionName = actionName ?? methodInfo.Name,
+                                                ActionNameLocalized = actionNameLocalized,
+                                                ActionIcon = actionIcon,
+                                                AllowAnonymous = isAllowAnonymous,
+                                                RequiresHttpPost = isHttpPost,
+                                                RequiresAuthorization = actionRequiresAuthorization
+                                            });
+                                        }
+                                    }
+                                    else
+                                    {
+                                        continue;
+                                    }
                                 }
                             }
-                            else if (methodInfo.ReturnType.Name  == "ApiResult")
+                            else if (methodInfo.ReturnType.Name == "ActionResult" || methodInfo.ReturnType.Name == "IActionResult" || methodInfo.ReturnType.Name == "ApiResult")
                             {
-                                if (!controllerData.ActionsList.Any(cd => cd.ActionName == (actionName ?? methodInfo.Name)))
+                                if (actionNameLocalized is not null && controllerHasAllowAnonymousAttribute == false)
                                 {
-                                    controllerData.ActionsList.Add(new ActionData()
+                                    if (!controllerData.ActionsList.Any(cd => cd.ActionName == (actionName ?? methodInfo.Name)))
                                     {
-                                        ActionName = actionName ?? methodInfo.Name,
-                                        ActionNameLocalized = actionNameLocalized,
-                                        ActionIcon = actionIcon,
-                                        AllowAnonymous = isAllowAnonymous,
-                                        RequiresHttpPost = isHttpPost,
-                                        RequiresAuthorization = actionRequiresAuthorization
-                                    });
+                                        controllerData.ActionsList.Add(new ActionData()
+                                        {
+                                            ActionName = actionName ?? methodInfo.Name,
+                                            ActionNameLocalized = actionNameLocalized,
+                                            ActionIcon = actionIcon,
+                                            AllowAnonymous = isAllowAnonymous,
+                                            RequiresHttpPost = isHttpPost,
+                                            RequiresAuthorization = actionRequiresAuthorization
+                                        });
+                                    }
+                                }
+                                else
+                                {
+                                    continue;
                                 }
                             }
                         }
@@ -155,7 +187,7 @@ namespace Api.Admin.Modules
             }
             return data;
         }
-      public static  void PopulatePermissionsAndGroupsIntoDatabase()
+        public static void PopulatePermissionsAndGroupsIntoDatabase()
         {
 
             ApplicationDbContext db = new ApplicationDbContext();
@@ -252,8 +284,8 @@ namespace Api.Admin.Modules
                         {
                             permission.RequiresAuthorization = true;
                         }
-                          newGroup.Permissions.Add(permission);
-                       /* db.RolePermissions.Add(new RolePermission { PermissionID = permission.Id, RoleID = 1 });*/
+                        newGroup.Permissions.Add(permission);
+                        /* db.RolePermissions.Add(new RolePermission { PermissionID = permission.Id, RoleID = 1 });*/
                     }
                     db.PermissionGroups.Add(newGroup);
                 }
